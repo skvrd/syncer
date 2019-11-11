@@ -1,0 +1,13 @@
+shops:
+  - ebay:
+      name: cozyboots
+      param1: test
+      param2: test
+  - ebay:
+      name: cozyboots2
+      param1: test
+      param2: test
+  - shopify:
+      name: cozyshop
+      param1: test
+      param2: test
