@@ -9,6 +9,7 @@ flake8 = "*"
 [packages]
 requests = "==2.22.0"
 pyyaml = "==5.1.2"
+ebaysdk = "==2.1.5"
 
 [requires]
 python_version = "3.7"
