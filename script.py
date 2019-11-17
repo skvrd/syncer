@@ -1,3 +1,5 @@
 import yaml
 
-config = yaml.safe_load(open('config.yml', 'r'))
+config = yaml.safe_load(open('config.sample.yml', 'r'))
+
+print(config)
