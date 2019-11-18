@@ -1,5 +1,7 @@
 # Sync ebay and shopify stores
 
+Right now it only syncs prices. From master shop (defined in config) to non-master shops.
+
 ## how to use:
 
 1. Make sure `pipenv` is installed on you machine.
