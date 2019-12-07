@@ -1,2 +1,5 @@
 .vscode
 config.yml
+.terraform
+terraform.tfstate
+terraform.tfstate.backup
