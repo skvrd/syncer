@@ -179,7 +179,6 @@ getcontext().prec = 2
 config = yaml.safe_load(open('config.yml', 'r'))
 shops = [Shop(**shop) for shop in config.get("shops")]
 
-
 master = dict()
 synced = dict()
 for shop in shops:
