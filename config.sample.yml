@@ -1,3 +1,4 @@
+sentry: http://sentry.url
 shops:
   - type: ebay
     name: cozyboots

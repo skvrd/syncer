@@ -2,6 +2,8 @@ import datetime
 import requests
 import time
 import yaml
+import schedule
+import sentry_sdk
 
 from dataclasses import dataclass
 from decimal import Decimal, getcontext
@@ -175,26 +177,39 @@ def list_to_dict_by_sku(array, result=None):
     return result
 
 
-getcontext().prec = 2
-config = yaml.safe_load(open('config.yml', 'r'))
-shops = [Shop(**shop) for shop in config.get("shops")]
+def work(config):
 
-master = dict()
-synced = dict()
-for shop in shops:
-    if shop.master:
-        master = list_to_dict_by_sku(shop.get_items())
-    else:
-        synced = list_to_dict_by_sku(shop.get_items(), synced)
-print("!")
-for sku, master_item in master.items():
-    for item in synced.get(sku, []):
-        print(item)
-        if abs(float(master_item[0].price) * item.shop.coefficient -
-               float(item.price)) > 0.1:
-            print(f"(SKU: {sku}) Update {item.id} to "
-                  f"{float(master_item[0].price) * item.shop.coefficient} "
-                  f"from {item.price}")
-            item.price = \
-                Decimal(float(master_item[0].price) * item.shop.coefficient)
-            item.save()
+    shops = [Shop(**shop) for shop in config.get("shops")]
+
+    master = dict()
+    synced = dict()
+    for shop in shops:
+        if shop.master:
+            master = list_to_dict_by_sku(shop.get_items())
+        else:
+            synced = list_to_dict_by_sku(shop.get_items(), synced)
+
+    for sku, master_item in master.items():
+        for item in synced.get(sku, []):
+            if abs(float(master_item[0].price) * item.shop.coefficient -
+                   float(item.price)) > 0.1:
+                print(f"(SKU: {sku}) Update {item.id} to "
+                      f"{float(master_item[0].price) * item.shop.coefficient} "
+                      f"from {item.price}")
+                item.price = \
+                    Decimal(float(master_item[0].price)
+                            * item.shop.coefficient)
+                item.save()
+
+
+config = yaml.safe_load(open('config.yml', 'r'))
+
+if config.get("sentry"):
+    sentry_sdk.init(config.get("sentry"))
+    x = 1/0
+
+getcontext().prec = 2
+schedule.every().hour.do(work, config=config)
+while True:
+    schedule.run_pending()
+    time.sleep(1)
