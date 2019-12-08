@@ -7,4 +7,4 @@ WORKDIR syncer
 COPY config.yml .
 
 RUN pipenv install
-CMD pipenv run python script.py
+CMD pipenv run python -u script.py
