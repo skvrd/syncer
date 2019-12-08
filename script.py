@@ -202,6 +202,7 @@ def work(config):
                 item.save()
 
 
+print("Start script")
 config = yaml.safe_load(open('config.yml', 'r'))
 
 if config.get("sentry"):
