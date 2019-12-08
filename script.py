@@ -206,7 +206,6 @@ config = yaml.safe_load(open('config.yml', 'r'))
 
 if config.get("sentry"):
     sentry_sdk.init(config.get("sentry"))
-    x = 1/0
 
 getcontext().prec = 2
 schedule.every().hour.do(work, config=config)
