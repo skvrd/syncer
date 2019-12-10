@@ -203,7 +203,8 @@ def work(config):
                                 * item.shop.coefficient)
                     item.save()
     except ConnectionResetError as e:
-        logging.error(e)  # Just log it to sentry, should be good for startres
+        # Just log it to sentry, should be good for startres
+        logging.error(e, exc_info=True)
 
 
 print("Start script")
