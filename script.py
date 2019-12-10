@@ -180,28 +180,30 @@ def list_to_dict_by_sku(array, result=None):
 
 
 def work(config):
+    try:
+        shops = [Shop(**shop) for shop in config.get("shops")]
 
-    shops = [Shop(**shop) for shop in config.get("shops")]
+        master = dict()
+        synced = dict()
+        for shop in shops:
+            if shop.master:
+                master = list_to_dict_by_sku(shop.get_items())
+            else:
+                synced = list_to_dict_by_sku(shop.get_items(), synced)
 
-    master = dict()
-    synced = dict()
-    for shop in shops:
-        if shop.master:
-            master = list_to_dict_by_sku(shop.get_items())
-        else:
-            synced = list_to_dict_by_sku(shop.get_items(), synced)
-
-    for sku, master_item in master.items():
-        for item in synced.get(sku, []):
-            if abs(float(master_item[0].price) * item.shop.coefficient -
-                   float(item.price)) > 0.1:
-                print(f"(SKU: {sku}) Update {item.id} to "
-                      f"{float(master_item[0].price) * item.shop.coefficient} "
-                      f"from {item.price}")
-                item.price = \
-                    Decimal(float(master_item[0].price)
-                            * item.shop.coefficient)
-                item.save()
+        for sku, master_item in master.items():
+            for item in synced.get(sku, []):
+                if abs(float(master_item[0].price) * item.shop.coefficient -
+                       float(item.price)) > 0.1:
+                    print(f"(SKU: {sku}) Update {item.id} to "
+                          f"{float(master_item[0].price) * item.shop.coefficient} "
+                          f"from {item.price}")
+                    item.price = \
+                        Decimal(float(master_item[0].price)
+                                * item.shop.coefficient)
+                    item.save()
+    except ConnectionResetError as e:
+        logging.error(e)  # Just log it to sentry, should be good for startres
 
 
 print("Start script")
