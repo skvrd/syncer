@@ -1,9 +1,11 @@
+import logging
 import datetime
 import requests
 import time
 import yaml
 import schedule
 import sentry_sdk
+from sentry_sdk.integrations.logging import LoggingIntegration
 
 from dataclasses import dataclass
 from decimal import Decimal, getcontext
@@ -205,8 +207,12 @@ def work(config):
 print("Start script")
 config = yaml.safe_load(open('config.yml', 'r'))
 
+sentry_logging = LoggingIntegration(
+    level=logging.INFO,        # Capture info and above as breadcrumbs
+    event_level=logging.ERROR  # Send errors as events
+)
 if config.get("sentry"):
-    sentry_sdk.init(config.get("sentry"))
+    sentry_sdk.init(dsn=config.get("sentry"), integrations=[sentry_logging])
 
 getcontext().prec = 2
 schedule.every().hour.do(work, config=config)
