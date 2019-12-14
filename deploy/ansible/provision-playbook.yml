@@ -1,0 +1,37 @@
+---
+- name: Provision server to run syncer
+  hosts: all
+  connection: ssh
+
+  tasks:
+    - name: Updating yum!
+      yum:
+        name: '*'
+        state: latest
+      become: true
+    - name: install docker
+      yum:
+        name: docker
+        state: latest
+      become: true
+    - name: Start docker service
+      shell: service docker start
+      become: true
+    - name: Clear old containers data
+      shell: docker system prune
+      become: true
+    - name: Copy config file
+      copy:
+        dest: .
+        src: ../../config.yml
+    - name: Copy docker file
+      copy:
+        dest: .
+        src: ../../Dockerfile
+    - name: Build docker image
+      shell: docker build --no-cache -t syncer:latest .
+      become: true
+    - name: Run docker container 
+      shell: docker run -d syncer:latest
+      become: true
+      
