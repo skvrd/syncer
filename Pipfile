@@ -9,7 +9,7 @@ autopep8 = "*"
 
 [packages]
 requests = "==2.22.0"
-pyyaml = "==5.1.2"
+pyyaml = "==5.4"
 ebaysdk = "==2.1.5"
 schedule = "==0.6.0"
 sentry-sdk = "==0.13.5"
